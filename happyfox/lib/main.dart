@@ -1,13 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:happyfox/studenthub.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:happyfox/studenthub.dart';
 import 'assignment.dart';
 import 'attendance.dart';
 import 'profile.dart';
+import 'login_page.dart';
+import 'dart:convert';
 
-void main() {
-  runApp(MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final prefs = await SharedPreferences.getInstance();
+  final userJson = prefs.getString('currentUser');
+
+  runApp(MaterialApp(
+    title: 'UniSync',
+    theme: ThemeData(
+      primarySwatch: Colors.blue,
+      visualDensity: VisualDensity.adaptivePlatformDensity,
+    ),
+    home: userJson == null ? LoginPage() : MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -85,14 +97,34 @@ class _HomePageState extends State<HomePage> {
                 backgroundImage:
                     NetworkImage('https://via.placeholder.com/150'),
               ),
-              accountName: Text(
-                'John Doe',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+              accountName: FutureBuilder<SharedPreferences>(
+                future: SharedPreferences.getInstance(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    final userData = json.decode(
+                        snapshot.data!.getString('currentUser') ?? '{}');
+                    return Text(
+                      userData['name'] ?? 'User Name',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    );
+                  }
+                  return Text('Loading...');
+                },
               ),
-              accountEmail: Text('john.doe@university.edu'),
+              accountEmail: FutureBuilder<SharedPreferences>(
+                future: SharedPreferences.getInstance(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    final userData = json.decode(
+                        snapshot.data!.getString('currentUser') ?? '{}');
+                    return Text(userData['email'] ?? 'user@example.com');
+                  }
+                  return Text('Loading...');
+                },
+              ),
             ),
             ListTile(
               leading: Icon(Icons.dashboard),
@@ -137,9 +169,14 @@ class _HomePageState extends State<HomePage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              onTap: () {
-                Navigator.pop(context);
-                // Handle logout
+              onTap: () async {
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.remove('currentUser'); // Remove user session
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                  (route) => false, // This removes all previous routes
+                );
               },
             ),
             SizedBox(height: 20), // Add some padding at the bottom
