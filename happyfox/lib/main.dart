@@ -34,8 +34,8 @@ class _HomePageState extends State<HomePage> {
 
   static List<Widget> _widgetOptions = <Widget>[
     HomeContent(),
-    StudentHubPage(), // Placeholder for StudentHubPage
-    ProfilePage(), // Placeholder for ProfilePage
+    StudentHubPage(),
+    ProfilePage(),
   ];
 
   void _onItemTapped(int index) {
@@ -50,8 +50,101 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
+        leading: Builder(
+          builder: (BuildContext context) {
+            return IconButton(
+              icon: Icon(Icons.menu, color: Colors.black),
+              onPressed: () {
+                Scaffold.of(context).openDrawer();
+              },
+            );
+          },
+        ),
         title: Text('UniSync', style: TextStyle(color: Colors.black)),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.notifications, color: Colors.black),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => NotificationPage()),
+              );
+            },
+          ),
+        ],
+      ),
+      drawer: Drawer(
+        child: Column(
+          children: [
+            UserAccountsDrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              currentAccountPicture: CircleAvatar(
+                backgroundImage:
+                    NetworkImage('https://via.placeholder.com/150'),
+              ),
+              accountName: Text(
+                'John Doe',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              accountEmail: Text('john.doe@university.edu'),
+            ),
+            ListTile(
+              leading: Icon(Icons.dashboard),
+              title: Text('Dashboard'),
+              onTap: () {
+                Navigator.pop(context);
+                // Handle dashboard tap
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.book),
+              title: Text('My Courses'),
+              onTap: () {
+                Navigator.pop(context);
+                // Handle courses tap
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.calendar_today),
+              title: Text('Calendar'),
+              onTap: () {
+                Navigator.pop(context);
+                // Handle calendar tap
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.settings),
+              title: Text('Settings'),
+              onTap: () {
+                Navigator.pop(context);
+                // Handle settings tap
+              },
+            ),
+            Spacer(), // This will push the logout button to the bottom
+            Divider(),
+            ListTile(
+              leading: Icon(Icons.logout, color: Colors.red),
+              title: Text(
+                'Logout',
+                style: TextStyle(
+                  color: Colors.red,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                // Handle logout
+              },
+            ),
+            SizedBox(height: 20), // Add some padding at the bottom
+          ],
+        ),
       ),
       body: _widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
