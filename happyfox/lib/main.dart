@@ -1,7 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+=======
+import 'studenthub.dart'; // Import StudentHubPage
+>>>>>>> 7010effbf08499c2762556e179ef6acdd71b627a
 
 void main() {
   runApp(MyApp());
@@ -31,7 +35,7 @@ class _HomePageState extends State<HomePage> {
 
   static List<Widget> _widgetOptions = <Widget>[
     HomeContent(),
-    StudentHubPage(),
+    StudentHubPage(), // Now using imported StudentHubPage
     ProfilePage(),
   ];
 
@@ -317,13 +321,6 @@ class _SchedulePageState extends State<SchedulePage> {
         ),
       ),
     );
-  }
-}
-
-class StudentHubPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(child: Text('Student Hub Page'));
   }
 }
 
