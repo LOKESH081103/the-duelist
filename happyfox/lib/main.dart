@@ -78,7 +78,7 @@ class _HomePageState extends State<HomePage> {
                     NetworkImage("https://via.placeholder.com/150"),
               ),
             ),
-            ListTile(title: Text('Option 1'), onTap: () {}),
+            ListTile(title: Text('Option 5'), onTap: () {}),
             ListTile(title: Text('Option 2'), onTap: () {}),
             ListTile(title: Text('Option 3'), onTap: () {}),
             ListTile(title: Text('Option 4'), onTap: () {}),
