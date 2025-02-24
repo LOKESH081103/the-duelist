@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'assignment.dart';
 import 'attendance.dart';
+import 'profile.dart';
 
 void main() {
   runApp(MyApp());
@@ -34,7 +35,7 @@ class _HomePageState extends State<HomePage> {
   static List<Widget> _widgetOptions = <Widget>[
     HomeContent(),
     StudentHubPage(), // Placeholder for StudentHubPage
-    Text('Profile'), // Placeholder for ProfilePage
+    ProfilePage(), // Placeholder for ProfilePage
   ];
 
   void _onItemTapped(int index) {
@@ -492,13 +493,6 @@ class _SchedulePageState extends State<SchedulePage> {
         ),
       ),
     );
-  }
-}
-
-class ProfilePage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(child: Text('Profile Page'));
   }
 }
 
