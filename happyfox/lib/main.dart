@@ -48,77 +48,16 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: Builder(
-          builder: (BuildContext context) {
-            return IconButton(
-              icon: Icon(Icons.menu, color: Colors.black),
-              onPressed: () {
-                Scaffold.of(context).openDrawer();
-              },
-            );
-          },
-        ),
         title: Text('UniSync', style: TextStyle(color: Colors.black)),
         centerTitle: true,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.notifications, color: Colors.black),
-            onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => NotificationPage()));
-            },
-          ),
-        ],
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            UserAccountsDrawerHeader(
-              accountName: Text("User Name"),
-              accountEmail: Text("user@example.com"),
-              currentAccountPicture: CircleAvatar(
-                backgroundImage:
-                    NetworkImage("https://via.placeholder.com/150"),
-              ),
-            ),
-            ListTile(title: Text('Option 1'), onTap: () {}),
-            ListTile(title: Text('Option 2'), onTap: () {}),
-            ListTile(title: Text('Option 3'), onTap: () {}),
-            ListTile(title: Text('Option 4'), onTap: () {}),
-          ],
-        ),
-      ),
-      body: Stack(
-        children: [
-          _widgetOptions.elementAt(_selectedIndex),
-          Positioned(
-            right: 16,
-            bottom: 80,
-            child: FloatingActionButton(
-              child: Icon(Icons.chat),
-              backgroundColor: Colors.blue,
-              onPressed: () {
-                // TODO: Implement chatbot functionality
-              },
-            ),
-          ),
-        ],
-      ),
+      body: _widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.group),
-            label: 'Student Hub',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
+              icon: Icon(Icons.group), label: 'Student Hub'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
@@ -153,60 +92,23 @@ class _HomeContentState extends State<HomeContent> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         SizedBox(height: 20),
         ElevatedButton(
-          onPressed: () {
-            Navigator.push(
+          onPressed: () async {
+            await Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => SchedulePage()),
             );
+            _loadSavedSchedule(); // Reload timetable after schedule update
           },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.blue,
-            padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-          child: Text(
-            'Schedule Your Classes',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
+          child: Text('Schedule Your Classes'),
         ),
         SizedBox(height: 20),
-        Text(
-          "Your Timetable",
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
+        Text("Your Timetable",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         SizedBox(height: 10),
         _buildTimetable(),
-        SizedBox(height: 20),
-        Align(
-          alignment: Alignment.bottomLeft,
-          child: Padding(
-            padding: EdgeInsets.only(left: 40, bottom: 10),
-            child: Column(
-              children: [
-                IconButton(
-                  icon: Icon(Icons.event, size: 40, color: Colors.blue),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => AttendancePage()),
-                    );
-                  },
-                ),
-                Text("Attendance", style: TextStyle(fontSize: 16)),
-              ],
-            ),
-          ),
-        ),
       ],
     );
   }
@@ -224,10 +126,7 @@ class _HomeContentState extends State<HomeContent> {
         children: [
           Table(
             border: TableBorder.all(color: Colors.blue),
-            columnWidths: {
-              0: FixedColumnWidth(100),
-              1: FlexColumnWidth(),
-            },
+            columnWidths: {0: FixedColumnWidth(100), 1: FlexColumnWidth()},
             children: [
               TableRow(
                 decoration: BoxDecoration(color: Colors.blue[100]),
@@ -257,9 +156,8 @@ class _HomeContentState extends State<HomeContent> {
         text,
         textAlign: TextAlign.center,
         style: TextStyle(
-          fontWeight: isHeader ? FontWeight.bold : FontWeight.normal,
-          fontSize: 16,
-        ),
+            fontWeight: isHeader ? FontWeight.bold : FontWeight.normal,
+            fontSize: 16),
       ),
     );
   }
@@ -274,6 +172,21 @@ class _SchedulePageState extends State<SchedulePage> {
   final List<String> subjects = ["Maths", "Physics", "Chemistry", "Java"];
   final Map<int, String?> selectedSubjects = {};
 
+  @override
+  void initState() {
+    super.initState();
+    _loadSchedule();
+  }
+
+  Future<void> _loadSchedule() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      for (int i = 1; i <= 4; i++) {
+        selectedSubjects[i] = prefs.getString('period_$i') ?? null;
+      }
+    });
+  }
+
   Future<void> _saveSchedule() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     for (int i = 1; i <= 4; i++) {
@@ -281,16 +194,39 @@ class _SchedulePageState extends State<SchedulePage> {
         await prefs.setString('period_$i', selectedSubjects[i]!);
       }
     }
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Schedule saved successfully!")),
-    );
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text("Schedule saved successfully!")));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Schedule Your Classes')),
-      body: Center(child: Text('Schedule Page UI here')),
+      body: Column(
+        children: [
+          for (int i = 1; i <= 4; i++)
+            ListTile(
+              title: Text("Period $i"),
+              trailing: DropdownButton<String>(
+                value: selectedSubjects[i],
+                hint: Text("Select Subject"),
+                items: subjects.map((subject) {
+                  return DropdownMenuItem(value: subject, child: Text(subject));
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    selectedSubjects[i] = value;
+                  });
+                },
+              ),
+            ),
+          SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: _saveSchedule,
+            child: Text("Save Schedule"),
+          ),
+        ],
+      ),
     );
   }
 }
