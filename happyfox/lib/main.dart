@@ -1,4 +1,7 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(MyApp());
@@ -78,7 +81,7 @@ class _HomePageState extends State<HomePage> {
                     NetworkImage("https://via.placeholder.com/150"),
               ),
             ),
-            ListTile(title: Text('Option 5'), onTap: () {}),
+            ListTile(title: Text('Option 1'), onTap: () {}),
             ListTile(title: Text('Option 2'), onTap: () {}),
             ListTile(title: Text('Option 3'), onTap: () {}),
             ListTile(title: Text('Option 4'), onTap: () {}),
@@ -90,9 +93,10 @@ class _HomePageState extends State<HomePage> {
           _widgetOptions.elementAt(_selectedIndex),
           Positioned(
             right: 16,
-            bottom: 80,
+            bottom: 80, // Adjusted to place above the bottom navbar
             child: FloatingActionButton(
               child: Icon(Icons.chat),
+              backgroundColor: Colors.blue,
               onPressed: () {
                 // TODO: Implement chatbot functionality
               },
@@ -122,10 +126,197 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class HomeContent extends StatelessWidget {
+class HomeContent extends StatefulWidget {
+  @override
+  _HomeContentState createState() => _HomeContentState();
+}
+
+class _HomeContentState extends State<HomeContent> {
+  String _currentDateTime = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _updateTime();
+    Timer.periodic(Duration(seconds: 1), (timer) {
+      _updateTime();
+    });
+  }
+
+  void _updateTime() {
+    setState(() {
+      _currentDateTime =
+          DateFormat('EEE, MMM d • hh:mm a').format(DateTime.now());
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text('Home Content'));
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        SizedBox(height: 10),
+        Container(
+          padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+          decoration: BoxDecoration(
+            color: Colors.blue.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Text(
+            _currentDateTime,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: Colors.blue[700],
+            ),
+          ),
+        ),
+        SizedBox(height: 20),
+        Center(
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SchedulePage()),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: Text(
+              'Schedule Your Classes',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// Dummy SchedulePage
+class SchedulePage extends StatefulWidget {
+  @override
+  _SchedulePageState createState() => _SchedulePageState();
+}
+
+class _SchedulePageState extends State<SchedulePage> {
+  final List<String> subjects = ["Maths", "Physics", "Chemistry", "Java"];
+  final Map<int, String?> selectedSubjects = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedSchedule();
+  }
+
+  // Load saved timetable
+  Future<void> _loadSavedSchedule() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      for (int i = 1; i <= 4; i++) {
+        selectedSubjects[i] = prefs.getString('period_$i') ?? null;
+      }
+    });
+  }
+
+  // Save timetable in SharedPreferences
+  Future<void> _saveSchedule() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    for (int i = 1; i <= 4; i++) {
+      if (selectedSubjects[i] != null) {
+        await prefs.setString('period_$i', selectedSubjects[i]!);
+      }
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Schedule saved successfully!")),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Schedule Your Classes'),
+        backgroundColor: Colors.blue,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Select Your Subjects:",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 20),
+            for (int i = 1; i <= 4; i++) _buildPeriodDropdown(i),
+            SizedBox(height: 30),
+            Center(
+              child: ElevatedButton(
+                onPressed: _saveSchedule,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: Text(
+                  'Save Schedule',
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPeriodDropdown(int period) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 15.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.grey[200],
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: Colors.blue, width: 1.5),
+        ),
+        child: ListTile(
+          title: Text(
+            'Period $period',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          ),
+          trailing: DropdownButton<String>(
+            value: selectedSubjects[period],
+            hint: Text("Select"),
+            items: subjects.map((String subject) {
+              return DropdownMenuItem<String>(
+                value: subject,
+                child: Text(subject),
+              );
+            }).toList(),
+            onChanged: (String? newValue) {
+              setState(() {
+                selectedSubjects[period] = newValue;
+              });
+            },
+          ),
+        ),
+      ),
+    );
   }
 }
 
