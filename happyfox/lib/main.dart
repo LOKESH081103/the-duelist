@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'studenthub.dart'; // Import StudentHubPage
 
 void main() {
   runApp(MyApp());
@@ -28,7 +29,7 @@ class _HomePageState extends State<HomePage> {
 
   static List<Widget> _widgetOptions = <Widget>[
     HomeContent(),
-    StudentHubPage(),
+    StudentHubPage(), // Now using imported StudentHubPage
     ProfilePage(),
   ];
 
@@ -126,13 +127,6 @@ class HomeContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(child: Text('Home Content'));
-  }
-}
-
-class StudentHubPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(child: Text('Student Hub Page'));
   }
 }
 
