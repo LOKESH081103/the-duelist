@@ -1,11 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-=======
 import 'studenthub.dart'; // Import StudentHubPage
->>>>>>> 7010effbf08499c2762556e179ef6acdd71b627a
 
 void main() {
   runApp(MyApp());
