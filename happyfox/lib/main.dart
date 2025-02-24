@@ -1,8 +1,9 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:happyfox/studenthub.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'attendance.dart'; // Import AttendancePage
-import 'studenthub.dart'; // Import StudentHubPage
+
+import 'assignment.dart';
+import 'attendance.dart';
 
 void main() {
   runApp(MyApp());
@@ -32,8 +33,8 @@ class _HomePageState extends State<HomePage> {
 
   static List<Widget> _widgetOptions = <Widget>[
     HomeContent(),
-    StudentHubPage(),
-    ProfilePage(),
+    StudentHubPage(), // Placeholder for StudentHubPage
+    Text('Profile'), // Placeholder for ProfilePage
   ];
 
   void _onItemTapped(int index) {
@@ -91,73 +92,245 @@ class _HomeContentState extends State<HomeContent> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(height: 20),
-        ElevatedButton(
-          onPressed: () async {
-            await Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => SchedulePage()),
-            );
-            _loadSavedSchedule(); // Reload timetable after schedule update
-          },
-          child: Text('Schedule Your Classes'),
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Welcome to UniSync!",
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue[800],
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      "Manage your academic schedule efficiently",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SchedulePage()),
+                      );
+                      _loadSavedSchedule();
+                    },
+                    icon: Icon(Icons.schedule),
+                    label: Text('Schedule Your Classes'),
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 24),
+            Text(
+              "Today's Schedule",
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.blue[800],
+              ),
+            ),
+            SizedBox(height: 16),
+            _buildTimetable(),
+            SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AttendancePage()),
+                      );
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.blue[50],
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.blue[200]!),
+                      ),
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.calendar_today,
+                            size: 32,
+                            color: Colors.blue[800],
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            "Attendance",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue[800],
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            "85%",
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 16),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AssignmentPage()),
+                      );
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.orange[50],
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.orange[200]!),
+                      ),
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.assignment,
+                            size: 32,
+                            color: Colors.orange[800],
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            "Assignments",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.orange[800],
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            "2 Due",
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.orange,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
-        SizedBox(height: 20),
-        Text("Your Timetable",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-        SizedBox(height: 10),
-        _buildTimetable(),
-      ],
+      ),
     );
   }
 
   Widget _buildTimetable() {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20),
-      padding: EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.blue, width: 1.5),
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
       ),
-      child: Column(
-        children: [
-          Table(
-            border: TableBorder.all(color: Colors.blue),
-            columnWidths: {0: FixedColumnWidth(100), 1: FlexColumnWidth()},
-            children: [
-              TableRow(
-                decoration: BoxDecoration(color: Colors.blue[100]),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            for (int i = 1; i <= 4; i++)
+              Column(
                 children: [
-                  _tableCell('Period', isHeader: true),
-                  _tableCell('Subject', isHeader: true),
+                  Container(
+                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: i.isOdd ? Colors.blue[50] : Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.blue[100],
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                '$i',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blue[900],
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 16),
+                            Text(
+                              'Period $i',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Text(
+                          selectedSubjects[i] ?? "Not Assigned",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.blue[800],
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (i < 4) Divider(height: 1),
                 ],
               ),
-              for (int i = 1; i <= 4; i++)
-                TableRow(
-                  children: [
-                    _tableCell('Period $i'),
-                    _tableCell(selectedSubjects[i] ?? "Not Assigned"),
-                  ],
-                ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _tableCell(String text, {bool isHeader = false}) {
-    return Padding(
-      padding: EdgeInsets.all(10),
-      child: Text(
-        text,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-            fontWeight: isHeader ? FontWeight.bold : FontWeight.normal,
-            fontSize: 16),
+          ],
+        ),
       ),
     );
   }
@@ -194,38 +367,129 @@ class _SchedulePageState extends State<SchedulePage> {
         await prefs.setString('period_$i', selectedSubjects[i]!);
       }
     }
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text("Schedule saved successfully!")));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Schedule saved successfully!")),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Schedule Your Classes')),
-      body: Column(
-        children: [
-          for (int i = 1; i <= 4; i++)
-            ListTile(
-              title: Text("Period $i"),
-              trailing: DropdownButton<String>(
-                value: selectedSubjects[i],
-                hint: Text("Select Subject"),
-                items: subjects.map((subject) {
-                  return DropdownMenuItem(value: subject, child: Text(subject));
-                }).toList(),
-                onChanged: (value) {
-                  setState(() {
-                    selectedSubjects[i] = value;
-                  });
-                },
+      appBar: AppBar(
+        title: Text('Schedule Your Classes'),
+        elevation: 0,
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.blue[50]!, Colors.white],
+          ),
+        ),
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Set Your Class Schedule",
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue[800],
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      "Choose subjects for each period",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    SizedBox(height: 24),
+                    for (int i = 1; i <= 4; i++)
+                      Card(
+                        margin: EdgeInsets.only(bottom: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Period $i",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blue[800],
+                                ),
+                              ),
+                              SizedBox(height: 12),
+                              Container(
+                                width: double.infinity,
+                                padding: EdgeInsets.symmetric(horizontal: 12),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(color: Colors.blue[200]!),
+                                ),
+                                child: DropdownButton<String>(
+                                  value: selectedSubjects[i],
+                                  hint: Text("Select Subject"),
+                                  isExpanded: true,
+                                  underline: SizedBox(),
+                                  items: subjects.map((subject) {
+                                    return DropdownMenuItem(
+                                      value: subject,
+                                      child: Text(subject),
+                                    );
+                                  }).toList(),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      selectedSubjects[i] = value;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
             ),
-          SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: _saveSchedule,
-            child: Text("Save Schedule"),
-          ),
-        ],
+            Container(
+              padding: EdgeInsets.all(16),
+              child: ElevatedButton(
+                onPressed: _saveSchedule,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.save),
+                    SizedBox(width: 8),
+                    Text(
+                      "Save Schedule",
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  ],
+                ),
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
