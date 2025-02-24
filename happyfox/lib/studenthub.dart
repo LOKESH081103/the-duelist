@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'notes.dart';
+import 'startup_pitch.dart';
 
 class StudentHubPage extends StatelessWidget {
   @override
@@ -71,57 +73,18 @@ class StudentHubPage extends StatelessWidget {
   }
 }
 
-class NotesPage extends StatelessWidget {
-  final List<String> subjects = [
-    'Mathematics',
-    'Physics',
-    'Chemistry',
-    'Biology',
-    'Computer Science',
-    'History',
-    'Economics',
-    'English Literature'
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Notes')),
-      body: ListView.builder(
-        itemCount: subjects.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(subjects[index]),
-            trailing: Icon(Icons.arrow_forward_ios),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      SubjectNotesPage(subject: subjects[index]),
-                ),
-              );
-            },
-          );
-        },
-      ),
-    );
-  }
-}
-
-class SubjectNotesPage extends StatelessWidget {
-  final String subject;
-  SubjectNotesPage({required this.subject});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('$subject Notes')),
-      body: Center(
-        child: Text('No notes available for $subject.',
-            style: TextStyle(fontSize: 18)),
-      ),
-    );
+class SubjectModel {
+  static List<String> getSubjects() {
+    return [
+      'Mathematics',
+      'Physics',
+      'Chemistry',
+      'Biology',
+      'Computer Science',
+      'History',
+      'Economics',
+      'English Literature'
+    ];
   }
 }
 
@@ -263,7 +226,7 @@ final List<HubOption> hubOptions = [
   HubOption(
       title: 'Notes',
       gradientColors: [Colors.green.shade400, Colors.green.shade900],
-      page: NotesPage()),
+      page: const Notes()),
   HubOption(
       title: 'Resource Sharing',
       gradientColors: [Colors.blue.shade400, Colors.blue.shade900],
@@ -271,7 +234,7 @@ final List<HubOption> hubOptions = [
   HubOption(
       title: 'Startup Pitching',
       gradientColors: [Colors.red.shade400, Colors.red.shade900],
-      page: PlaceholderPage('Startup Pitching')),
+      page: const StartupPitch()),
   HubOption(
       title: 'Study Groups',
       gradientColors: [Colors.orange.shade400, Colors.orange.shade900],
