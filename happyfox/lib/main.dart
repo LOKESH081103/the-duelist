@@ -6,6 +6,8 @@ import 'attendance.dart';
 import 'profile.dart';
 import 'login_page.dart';
 import 'dart:convert';
+import 'teacher.dart';
+import 'role_selection.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +20,7 @@ void main() async {
       primarySwatch: Colors.blue,
       visualDensity: VisualDensity.adaptivePlatformDensity,
     ),
-    home: userJson == null ? LoginPage() : MyApp(),
+    home: userJson == null ? RoleSelectionPage() : MyApp(),
   ));
 }
 
@@ -151,6 +153,17 @@ class _HomePageState extends State<HomePage> {
               },
             ),
             ListTile(
+              leading: Icon(Icons.school),
+              title: Text('Teacher'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => TeacherHomePage()),
+                );
+              },
+            ),
+            ListTile(
               leading: Icon(Icons.settings),
               title: Text('Settings'),
               onTap: () {
@@ -174,7 +187,7 @@ class _HomePageState extends State<HomePage> {
                 await prefs.remove('currentUser'); // Remove user session
                 Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(builder: (context) => LoginPage()),
+                  MaterialPageRoute(builder: (context) => RoleSelectionPage()),
                   (route) => false, // This removes all previous routes
                 );
               },
@@ -629,6 +642,10 @@ class _SchedulePageState extends State<SchedulePage> {
 class NotificationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: AppBar(title: Text('Notifications')));
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Notifications'),
+      ),
+    );
   }
 }
