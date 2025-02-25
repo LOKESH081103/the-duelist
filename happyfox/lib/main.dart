@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:happyfox/studenthub.dart';
+import 'package:provider/provider.dart';
+import 'resource_provider.dart';
+import 'studenthub.dart';
 import 'assignment.dart';
 import 'attendance.dart';
 import 'profile.dart';
@@ -14,14 +16,21 @@ void main() async {
   final prefs = await SharedPreferences.getInstance();
   final userJson = prefs.getString('currentUser');
 
-  runApp(MaterialApp(
-    title: 'UniSync',
-    theme: ThemeData(
-      primarySwatch: Colors.blue,
-      visualDensity: VisualDensity.adaptivePlatformDensity,
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ResourceProvider()),
+      ],
+      child: MaterialApp(
+        title: 'UniSync',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+        ),
+        home: userJson == null ? RoleSelectionPage() : MyApp(),
+      ),
     ),
-    home: userJson == null ? RoleSelectionPage() : MyApp(),
-  ));
+  );
 }
 
 class MyApp extends StatelessWidget {
