@@ -11,6 +11,7 @@ import 'dart:convert';
 import 'teacher.dart';
 import 'role_selection.dart';
 import 'chat_widget.dart';
+import 'face_recognition_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -430,6 +431,31 @@ class _HomeContentState extends State<HomeContent> {
                   ),
                 ),
               ],
+            ),
+            SizedBox(height: 24),
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => FaceRecognitionPage(),
+                        ),
+                      );
+                    },
+                    icon: Icon(Icons.face),
+                    label: Text('Log Attendance'),
+                    style: ElevatedButton.styleFrom(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      textStyle: TextStyle(fontSize: 18),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
