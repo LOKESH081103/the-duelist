@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'notes.dart';
 import 'startup_pitch.dart';
 import 'resource.dart';
+import 'study_groups.dart';
 
 class StudentHubPage extends StatelessWidget {
   @override
@@ -118,7 +119,7 @@ final List<HubOption> hubOptions = [
   HubOption(
       title: 'Study Groups',
       gradientColors: [Colors.orange.shade400, Colors.orange.shade900],
-      page: PlaceholderPage('Study Groups')),
+      page: StudyGroupsPage()),
   HubOption(
       title: 'Club Activities',
       gradientColors: [Colors.purple.shade400, Colors.purple.shade900],
