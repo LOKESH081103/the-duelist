@@ -10,6 +10,7 @@ import 'login_page.dart';
 import 'dart:convert';
 import 'teacher.dart';
 import 'role_selection.dart';
+import 'chat_widget.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -216,6 +217,22 @@ class _HomePageState extends State<HomePage> {
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
       ),
+      floatingActionButton: FloatingActionButton(
+        heroTag: 'chatBot',
+        onPressed: () {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            builder: (context) => AIChatWidget(),
+          );
+        },
+        child: Icon(Icons.chat_bubble, color: Colors.white),
+        backgroundColor: Colors.blue,
+        elevation: 4,
+        tooltip: 'Chat with AI',
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }
